@@ -10,13 +10,22 @@ Our Coq proofs are verified in Coq version **Coq 8.13.1**. We rely on the Coq li
 ### Prerequisites
 
 1. Install Coq 8.13.1.
-   The recommended way to install Coq is via `OPAM`, using `opam pin add coq 8.13.1` command. Please refer to [here](https://coq.inria.fr/opam/www/using.html) for detailed steps.
+   The recommended way to install Coq is via `OPAM`,
+   ```
+   # create a local switch for this artifact
+   opam switch create iso-fsub 4.12.0 
+   # update the shell environment
+   eval $(opam env)
+   # pin the Coq version to 8.13.1 and install
+   opam pin add coq 8.13.1
+   ```
+   Please refer to [here](https://coq.inria.fr/opam/www/using.html) for detailed steps.
 
-2. Make sure `Coq` is installed (type `coqc` in the terminal, if you see "command
-   not found" this means you have not properly installed Coq), then install `Metalib`:
-   1. Download the source code of `Metalib` from `https://github.com/plclub/metalib/releases/tag/coq8.10`.
-   2. `cd Metalib`
-   3. `make install`
+2. Make sure `Coq` is installed, then install `Metalib`:
+   1. Download the source code `zip` of `Metalib` from `https://github.com/plclub/metalib/releases/tag/coq8.10`.
+   2. unzip the source code `metalib-coq8.10` and `cd` into the directory.
+   3. `cd Metalib`
+   4. `make install`
 
 ### Build and Compile the Proofs
 
@@ -24,7 +33,7 @@ Our Coq proofs are verified in Coq version **Coq 8.13.1**. We rely on the Coq li
 
 2. Type `make` in the terminal to build and compile the proofs.
 
-3. You should see something like the following (suppose `>` is the prompt):
+3. You should see something like the following:
    ```sh
    coq_makefile -arg '-w -variable-collision,-meta-collision,-require-in-module' -f _CoqProject -o CoqSrc.mk
    COQDEP VFILES
@@ -35,6 +44,9 @@ Our Coq proofs are verified in Coq version **Coq 8.13.1**. We rely on the Coq li
    ```
    some warning messages may be printed, but they do not affect the building of the proof.
 
+4. You can remove the compiled proofs by `make clean`
+
+5. To remove Coq 8.13.1 installed in this artifact, you can run `opam switch remove iso-fsub`
 
 
 ## Paper to artifact correspondence
@@ -42,7 +54,7 @@ Our Coq proofs are verified in Coq version **Coq 8.13.1**. We rely on the Coq li
 
 ### Overview of libraries
 
-The formalization of the paper uses the locally nameless representation [Aydemir, Brian, et al. "Engineering formal metatheory." (2008)] of terms and types. The formalization is built with a third-party library Metalib, which implements the locally nameless representation. 
+The formalization of the paper uses the locally nameless representation [Aydemir, Brian, et al. "Engineering formal metatheory." (2008)] of terms and types. The formalization is built with a third-party library Metalib, which implements the locally nameless representation.  For locally nameless related definitions, our naming follows the conventions in Metalib examples. A detailed explanation can be found [here](https://www.cis.upenn.edu/~plclub/popl08-tutorial/code/coqdoc/Fsub_Definitions.html).
 
 
 ### Proof Structure
@@ -79,9 +91,9 @@ Key definitions in the paper:
 | Fig. 1. Subtyping | Rules.v | $\Gamma \vdash A \le B$ | `sub` |
 | Fig. 2. Typing | Rules.v | $\Gamma \vdash e: A $ | `typing` |
 | Fig. 2. Reduction | Rules.v | $\Gamma \vdash e_1 \hookrightarrow e_2$ | `step` |
-| Fig. 3. Exposure | AlgoTyping.v | $\Gamma \vdash A \Uparrow B$  | `exposure` |
-| Fig. 3. Exposure | AlgoTyping.v | $\Gamma \vdash A \Downarrow B$ | `exposure2` |
-| Fig. 3. Algorithmic Typing | AlgoTyping.v | $\Gamma_a \vdash e: A $ | `algo_typing` |
+| Fig. 3. Upper Exposure | AlgoTyping.v | $\Gamma \vdash A \Uparrow B$  | `exposure` |
+| Fig. 3. Lower Exposure | AlgoTyping.v | $\Gamma \vdash A \Downarrow B$ | `exposure2` |
+| Fig. 3. Algorithmic Typing | AlgoTyping.v | $\Gamma_a \vdash e: A $ | `Algo.typing` |
 
 
 #### `kernel_fsub_all`
@@ -93,18 +105,18 @@ The paper to proof table:
 
 | Theorem | File | Name in Coq
 | ----- | ------- | ------
-| Reflexivity | Reflexivity.v | `Reflexivity` |
-| Transitivity | Transitivity.v | `sub_transitivity` | 
-| Unfolding lemma | Unfolding.v | `unfolding_lemma` |
-| Preservation | Preservation.v | `preservation` |
-| Progress | Progress.v | `progress` |
-| Soundness of algorithmic rules | AlgoTyping.v | `typing_algo_sound` |
-| Completeness of algorithmic rules | AlgoTyping.v | `minimum_typing` |
-| Decidability | Decidability.v | `decidability` |
-| Conservativity for Subtyping | Conservativity.v | `sub_conserv` |
-| Conservativity | Conservativity.v | `typing_conserv` |
+| Theorem 5.1 Reflexivity | Reflexivity.v | `Reflexivity` |
+| Theorem 5.2 Transitivity | Transitivity.v | `sub_transitivity` | 
+| Theorem 5.3 Preservation | Preservation.v | `preservation` |
+| Theorem 5.4 Progress | Progress.v | `progress` |
+| Lemma 5.6 Unfolding lemma | UnfoldingEquiv.v | `unfolding_lemma` |
+| Theorem 5.7 Decidability | Decidability.v | `decidability` |
+| Theorem 5.8 Conservativity | Conservativity.v | `typing_conserv` |
+| Lemma A.1 Generalized unfolding lemma | UnfoldingEquiv.v | `sub_generalize_intensive` |
+| Lemma A.2 Soundness of algorithmic rules | AlgoTyping.v | `typing_algo_sound` |
+| Lemma A.3 Completeness of algorithmic rules | AlgoTyping.v | `minimum_typing` |
 
-Coq Definitions are loacted in a similar way to to `kernel_fsub_main`.
+Coq Definitions are located in a similar way to to `kernel_fsub_main`.
 
 
 #### `kernel_fsub_minimal` 
@@ -117,6 +129,7 @@ The paper to proof table:
 | ----- | ------- | ------
 | Reflexivity | Reflexivity.v | `Reflexivity` |
 | Transitivity | Transitivity.v | `sub_transitivity` | 
+| Antisymmetry | Antisymmetry.v | `sub_antisymmetry` |
 | Unfolding lemma | Unfolding.v | `unfolding_lemma` |
 | Preservation | Preservation.v | `preservation` |
 | Progress | Progress.v | `progress` |
@@ -126,4 +139,4 @@ The paper to proof table:
 | Conservativity for Subtyping | Conservativity.v | `sub_conserv` |
 | Conservativity | Conservativity.v | `typing_conserv` |
 
-Coq Definitions are loacted in a similar way to `kernel_fsub_main`.
+Coq definitions are located in a similar way to `kernel_fsub_main`.
